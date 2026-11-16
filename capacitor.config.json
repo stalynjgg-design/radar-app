@@ -1,0 +1,6 @@
+{
+  "appId": "com.radar.ubicacion",
+  "appName": "Radar Vivo",
+  "webDir": "www",
+  "bundledWebRuntime": false
+}
