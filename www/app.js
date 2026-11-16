@@ -12,11 +12,9 @@ let watchId = null;
 function iniciarMapa() {
   map = L.map('map', { zoomControl: false }).setView([11.69, -70.19], 13);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  maxZoom: 19,
-  attribution: '© OpenStreetMap'
-}).addTo(map);
-  
-  
+    maxZoom: 19,
+    attribution: '© OpenStreetMap'
+  }).addTo(map);
 }
 
 // Actualizar o crear marcador en el mapa con la insignia personalizada
@@ -45,11 +43,9 @@ function actualizarMarcador(usuario) {
   });
 
   if (marcadores[usuario.telefono]) {
-    // Si ya existe, actualizamos su posición y refrescamos el icono
     marcadores[usuario.telefono].setLatLng(pos);
     marcadores[usuario.telefono].setIcon(insigniaHtml);
   } else {
-    // Si no existe, lo creamos con la insignia personalizada
     marcadores[usuario.telefono] = L.marker(pos, { icon: insigniaHtml })
       .addTo(map)
       .bindPopup(`<b>${usuario.nombre}</b><br>Teléfono: ${usuario.telefono}`);
@@ -76,9 +72,23 @@ function escucharUbicaciones() {
     .subscribe();
 }
 
-// Enviar mi ubicación a Supabase
-async function enviarPosicion(lat, lng) {
+// Enviar mi ubicación a Supabase y pintarla localmente al instante
+async function procesarNuevaUbicacion(lat, lng) {
   if (!miUsuario) return;
+
+  // Pintar o mover mi marcador en mi propio mapa de inmediato
+  actualizarMarcador({
+    telefono: miUsuario.telefono,
+    nombre: miUsuario.nombre,
+    lat: lat,
+    lng: lng,
+    conectado: true
+  });
+
+  // Centrar el mapa en mi posición la primera vez
+  map.setView([lat, lng], 16);
+
+  // Guardar en Supabase
   await supabaseClient.from('ubicaciones').upsert({
     telefono: miUsuario.telefono,
     nombre: miUsuario.nombre,
@@ -89,10 +99,9 @@ async function enviarPosicion(lat, lng) {
   });
 }
 
-// Iniciar rastreo (Usa plugin nativo en segundo plano si está en APK, o navegador si está en web)
+// Iniciar rastreo GPS (Web y APK)
 function iniciarRastreoGPS() {
   if (window.Capacitor && window.Capacitor.Plugins.BackgroundGeolocation) {
-    // MODO APP NATIVA (Funciona con pantalla bloqueada)
     const { BackgroundGeolocation } = window.Capacitor.Plugins;
     BackgroundGeolocation.addWatcher(
       {
@@ -100,24 +109,34 @@ function iniciarRastreoGPS() {
         backgroundTitle: "Radar Activo",
         requestPermissions: true,
         stale: false,
-        distanceFilter: 5 // Actualiza cada 5 metros de movimiento
+        distanceFilter: 5
       },
       (location, error) => {
         if (error) return console.error(error);
         if (location) {
-          enviarPosicion(location.latitude, location.longitude);
+          procesarNuevaUbicacion(location.latitude, location.longitude);
         }
       }
     ).then(id => { watchId = id; });
   } else {
-    // MODO NAVEGADOR WEB (Fallback para pruebas)
+    // Obtener la posición inicial de inmediato con getCurrentPosition
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        procesarNuevaUbicacion(pos.coords.latitude, pos.coords.longitude);
+      },
+      (err) => {
+        console.error("Error obteniendo GPS inicial:", err);
+        alert("Activa el GPS para conectarte");
+      },
+      { enableHighAccuracy: true }
+    );
+
+    // Mantener actualizado el movimiento con watchPosition
     watchId = navigator.geolocation.watchPosition(
       (pos) => {
-        const { latitude, longitude } = pos.coords;
-        enviarPosicion(latitude, longitude);
-        map.setView([latitude, longitude], 16);
+        procesarNuevaUbicacion(pos.coords.latitude, pos.coords.longitude);
       },
-      (err) => alert("Activa el GPS para conectarte"),
+      (err) => console.error("Error en watchPosition:", err),
       { enableHighAccuracy: true }
     );
   }
@@ -140,7 +159,7 @@ document.getElementById('btn-conectar').addEventListener('click', () => {
   document.getElementById('status-bar').classList.remove('hidden');
   document.getElementById('user-info').innerText = `🟢 ${nombre}`;
 
-  // Iniciar GPS y empezar a ver a los demás
+  // Iniciar GPS y escuchar ubicaciones de los demás
   iniciarRastreoGPS();
   escucharUbicaciones();
 });
@@ -157,4 +176,4 @@ document.getElementById('btn-desconectar').addEventListener('click', async () =>
 });
 
 iniciarMapa();
-              
+      
