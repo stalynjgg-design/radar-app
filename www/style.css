@@ -132,3 +132,34 @@ input::placeholder {
 .hidden {
   display: none !important;
 }
+
+/* ==========================================
+   ESTILOS PARA LA INSIGNIA DE UBICACIÓN
+   ========================================== */
+.custom-badge-container {
+    background: transparent;
+    border: none;
+}
+
+.user-badge {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 2px solid #007bff;
+    color: #333;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 13px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+    transform: translate(-50%, -100%);
+}
+
+.user-badge span {
+    font-size: 16px;
+  }
+  
