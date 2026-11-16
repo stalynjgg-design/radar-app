@@ -11,9 +11,11 @@ let watchId = null;
 // Inicializar el mapa centrado por defecto
 function iniciarMapa() {
   map = L.map('map', { zoomControl: false }).setView([11.69, -70.19], 13);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 19,
   attribution: '© OpenStreetMap'
 }).addTo(map);
+  
   
 }
 
