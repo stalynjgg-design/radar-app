@@ -8,11 +8,11 @@ let marcadores = {};
 let miUsuario = null;
 let watchId = null;
 
-// Inicializar el mapa centrado por defecto
+// Inicializar el mapa centrado con OpenStreetMap (sin errores de API Key)
 function iniciarMapa() {
   map = L.map('map', { zoomControl: false }).setView([11.69, -70.19], 13);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-    attribution: '© OpenStreetMap'
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
   }).addTo(map);
 }
 
@@ -138,4 +138,4 @@ document.getElementById('btn-desconectar').addEventListener('click', async () =>
 });
 
 iniciarMapa();
-  
+      
