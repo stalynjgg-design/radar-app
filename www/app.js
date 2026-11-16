@@ -8,15 +8,15 @@ let marcadores = {};
 let miUsuario = null;
 let watchId = null;
 
-// Inicializar el mapa centrado con OpenStreetMap (sin errores de API Key)
+// Inicializar el mapa centrado por defecto
 function iniciarMapa() {
   map = L.map('map', { zoomControl: false }).setView([11.69, -70.19], 13);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors'
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    attribution: '© OpenStreetMap'
   }).addTo(map);
 }
 
-// Actualizar o crear marcador en el mapa
+// Actualizar o crear marcador en el mapa con la insignia personalizada
 function actualizarMarcador(usuario) {
   if (!usuario.conectado) {
     if (marcadores[usuario.telefono]) {
@@ -27,13 +27,29 @@ function actualizarMarcador(usuario) {
   }
 
   const pos = [usuario.lat, usuario.lng];
+
+  // Crear la insignia visual flotante con el nombre del usuario
+  const insigniaHtml = L.divIcon({
+    className: 'custom-badge-container',
+    html: `
+      <div class="user-badge">
+        <span>📍</span>
+        <div>${usuario.nombre || 'Usuario'}</div>
+      </div>
+    `,
+    iconSize: [0, 0],
+    iconAnchor: [0, 0]
+  });
+
   if (marcadores[usuario.telefono]) {
+    // Si ya existe, actualizamos su posición y refrescamos el icono
     marcadores[usuario.telefono].setLatLng(pos);
+    marcadores[usuario.telefono].setIcon(insigniaHtml);
   } else {
-    marcadores[usuario.telefono] = L.marker(pos)
+    // Si no existe, lo creamos con la insignia personalizada
+    marcadores[usuario.telefono] = L.marker(pos, { icon: insigniaHtml })
       .addTo(map)
-      .bindPopup(`<b>${usuario.nombre}</b><br>${usuario.telefono}`)
-      .openPopup();
+      .bindPopup(`<b>${usuario.nombre}</b><br>Teléfono: ${usuario.telefono}`);
   }
 }
 
@@ -138,4 +154,4 @@ document.getElementById('btn-desconectar').addEventListener('click', async () =>
 });
 
 iniciarMapa();
-      
+              
