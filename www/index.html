@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Radar en Vivo</title>
+  <!-- Leaflet CSS (Mapa gratuito sin tarjeta de crédito) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Contenedor del Mapa -->
+  <div id="map"></div>
+
+  <!-- Pantalla de Bloqueo / Conexión (Liquid Glass) -->
+  <div id="auth-overlay" class="glass-overlay">
+    <div class="glass-card">
+      <h2>Conectar al Radar</h2>
+      <p>Ingresa tus datos para compartir tu ubicación y ver a los demás.</p>
+      
+      <input type="text" id="nombre" placeholder="Tu Nombre" required>
+      <input type="tel" id="telefono" placeholder="Tu Número de Teléfono" required>
+      
+      <button id="btn-conectar" class="liquid-btn">Conectar</button>
+    </div>
+  </div>
+
+  <!-- Panel Flotante cuando ya estás conectado -->
+  <div id="status-bar" class="glass-bar hidden">
+    <span id="user-info">Conectado</span>
+    <button id="btn-desconectar" class="liquid-btn small">Desconectar</button>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js"></script>
+</body>
+    </html>
+                                                                           
