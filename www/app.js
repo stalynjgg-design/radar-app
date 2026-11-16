@@ -12,8 +12,9 @@ let watchId = null;
 function iniciarMapa() {
   map = L.map('map', { zoomControl: false }).setView([11.69, -70.19], 13);
   L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-    attribution: '© OpenStreetMap'
-  }).addTo(map);
+  attribution: '© OpenStreetMap'
+}).addTo(map);
+  
 }
 
 // Actualizar o crear marcador en el mapa con la insignia personalizada
